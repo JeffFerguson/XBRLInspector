@@ -33,7 +33,7 @@
         public Model()
         {
             var doc = XbrlDocumentCacheModel.Instance;
-            Units = doc.XbrlFragments[0].Units;
+            Units = doc.XbrlFragments[0].Units.OrderBy(o => o.Id).ToList();
         }
     }
 }

@@ -1,0 +1,48 @@
+﻿@page "/Facts"
+@using XBRLInspector.Blazor.Models
+@using System.Web
+
+<h3>Facts</h3>
+
+@foreach (var currentFact in mdl.Facts)
+{
+    if (currentFact is Item)
+    {
+        var currentItem = currentFact as Item;
+        <h4>@currentItem.Name</h4>
+        <table border="1">
+            <tr>
+                <td>ID</td>
+                <td>@currentItem.Id</td>
+            </tr>
+            <tr>
+                <td>Unit</td>
+                <td>@currentItem.UnitRefName</td>
+            </tr>
+            <tr>
+                <td>Context</td>
+                <td>@currentItem.ContextRefName</td>
+            </tr>
+            <tr>
+                <td valign="top">Value</td>
+                <td>@((MarkupString)currentItem.Value)</td>
+            </tr>
+        </table>
+    }
+}
+
+@functions {
+    private readonly Model mdl = new Model();
+
+    public class Model
+    {
+        public List<Fact> Facts { get; private set; }
+
+        public Model()
+        {
+            var doc = XbrlDocumentCacheModel.Instance;
+            Facts = doc.XbrlFragments[0].Facts.OrderBy(o => o.Name).ToList();
+        }
+    }
+}
+
