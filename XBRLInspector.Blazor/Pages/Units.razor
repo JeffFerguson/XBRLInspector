@@ -1,0 +1,39 @@
+﻿@page "/Units"
+@using XBRLInspector.Blazor.Models
+
+<h3>Units</h3>
+
+<table border="1">
+    <thead>
+        <tr>
+            <td class="text-center">ID</td>
+            <td class="text-center">Is ISO 4217 Code Valid?</td>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var currentUnit in mdl.Units)
+    {
+        <tr>
+            <td class="text-center">@currentUnit.Id</td>
+            <td class="text-center">@currentUnit.IsIso4217CodeValid</td>
+        </tr>
+
+    }
+    </tbody>
+</table>
+
+@functions {
+    private readonly Model mdl = new Model();
+
+    public class Model
+    {
+        public int Count { get; private set; }
+        public List<Unit> Units { get; private set; }
+
+        public Model()
+        {
+            var doc = XbrlDocumentCacheModel.Instance;
+            Units = doc.XbrlFragments[0].Units;
+        }
+    }
+}

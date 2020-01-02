@@ -1,5 +1,49 @@
 ﻿@page "/"
 
-<h1>Hello, world!</h1>
+@using XBRLInspector.Blazor.Models
+@using JeffFerguson.Gepsio
+@using System.IO
+@using Microsoft.AspNetCore.ProtectedBrowserStorage
 
-Welcome to your new app.
+@inject ProtectedSessionStorage ProtectedSessionStore
+
+<h1>Welcome</h1>
+<p>Welcome to the XBRL Inspector. To begin, enter the URL to an XBRL document instance and click the "Load" button. Once the document is loaded, the various aspects of the loaded instance will be available for inspection from the application.</p>
+<EditForm Model="@mdl" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <InputText id="url" @bind-Value="mdl.Url" />
+    <button type="submit">Load</button>
+</EditForm>
+
+<div id="statusDiv">
+    <p>@mdl.Status</p>
+</div>
+
+@code {
+    private IndexModel mdl = new IndexModel();
+
+    private async void HandleValidSubmit()
+    {
+        try
+        {
+            mdl.Status = $"Loading {mdl.Url}. Please wait.";
+            StateHasChanged();
+            //doc = new XbrlDocument();
+            await XbrlDocumentCacheModel.Instance.LoadAsync(mdl.Url);
+            mdl.Status = $"The XBRL document at {mdl.Url} has been loaded.";
+            StateHasChanged();
+        }
+        catch (FileNotFoundException ex)
+        {
+            mdl.Status = $"EXCEPTION -- {ex.Message}";
+            StateHasChanged();
+        }
+        catch(UriFormatException ex)
+        {
+            mdl.Status = $"EXCEPTION -- {ex.Message}";
+            StateHasChanged();
+        }
+    }
+}
