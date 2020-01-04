@@ -1,0 +1,50 @@
+﻿@page "/Contexts"
+@using XBRLInspector.Blazor.Models
+
+<h3>Contexts</h3>
+
+@foreach (var currentContext in mdl.Contexts)
+{
+        <h4>@currentContext.Id</h4>
+        <table border="1">
+            <tr>
+                <td>Identifier</td>
+                <td>@currentContext.Identifier</td>
+            </tr>
+            <tr>
+                <td>Identifier Scheme</td>
+                <td>@currentContext.IdentifierScheme</td>
+            </tr>
+            @if (currentContext.DurationPeriod)
+            {
+                <tr>
+                    <td>Duration</td>
+                    <td>from @currentContext.PeriodStartDate.Date to @currentContext.PeriodEndDate.Date</td>
+                </tr>
+            }
+            @if (currentContext.InstantPeriod)
+            {
+                <tr>
+                    <td>Instant Date</td>
+                    <td>@currentContext.InstantDate</td>
+                </tr>
+            }
+        </table>
+    }
+}
+
+@functions {
+    private readonly Model mdl = new Model();
+
+    public class Model
+    {
+        public int Count { get; private set; }
+        public List<Context> Contexts { get; private set; }
+
+        public Model()
+        {
+            var doc = XbrlDocumentCacheModel.Instance;
+            Contexts = doc.XbrlFragments[0].Contexts.OrderBy(o => o.Id).ToList();
+        }
+    }
+}

@@ -14,7 +14,9 @@ XBRLInspector uses the [GitFlow](http://nvie.com/posts/a-successful-git-branchin
  * `master`
  * `develop`
 
-The `master` branch contains the code that has been published out as a NuGet package. The `develop` branch contains the code currently under development and ready for a future release. New code is developed under the `develop` branch, and only the Release-to-NuGet workflow will update `master` with the contents of `develop`. The `master` branch is never directly accessed.
+The `master` branch contains the code that has been published and deployed (which is actually hilarious to say, since, as of right now, it isn't actually deployed anywhere).
+
+The `develop` branch contains the code currently under development and ready for a future release. New code is developed under the `develop` branch, and only the Release-to-NuGet workflow will update `master` with the contents of `develop`. The `master` branch is never directly accessed.
 
 If you would like to modify the code and present a pull request, please do the following:
 
