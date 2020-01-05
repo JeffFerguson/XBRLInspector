@@ -1,11 +1,9 @@
 ﻿@page "/"
 
 @using XBRLInspector.Blazor.Models
-@using JeffFerguson.Gepsio
 @using System.IO
 @using Microsoft.AspNetCore.ProtectedBrowserStorage
-
-@inject ProtectedSessionStorage ProtectedSessionStore
+@using System.Xml
 
 <h1>Welcome</h1>
 <p>Welcome to the XBRL Inspector. To begin, enter the URL to an XBRL document instance and click the "Load" button. Once the document is loaded, the various aspects of the loaded instance will be available for inspection from the application.</p>
@@ -40,6 +38,11 @@
             StateHasChanged();
         }
         catch(UriFormatException ex)
+        {
+            mdl.Status = $"EXCEPTION -- {ex.Message}";
+            StateHasChanged();
+        }
+        catch(XmlException ex)
         {
             mdl.Status = $"EXCEPTION -- {ex.Message}";
             StateHasChanged();
