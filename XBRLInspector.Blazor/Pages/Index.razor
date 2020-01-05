@@ -28,7 +28,7 @@
         {
             mdl.Status = $"Loading {mdl.Url}. Please wait.";
             StateHasChanged();
-            await XbrlDocumentCacheModel.Instance.LoadAsync(mdl.Url);
+            await XbrlDocumentCacheModel.LoadAsync(mdl.Url);
             mdl.Status = $"The XBRL document at {mdl.Url} has been loaded.";
             StateHasChanged();
         }
