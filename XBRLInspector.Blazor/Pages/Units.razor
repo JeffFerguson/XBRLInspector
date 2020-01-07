@@ -3,11 +3,17 @@
 
 <h3>Units</h3>
 
+<p>
+    XBRL units are associated with codes that may or may not be valid according to ISO 4217. ISO 4217 is a standard first published by International Organization for Standardization in 1978, which delineates currency designators, country codes (alpha and numeric), and references to minor units.
+    For more information, see <a href="https://en.wikipedia.org/wiki/ISO_4217">here</a>.
+</p>
+
 <table border="1">
     <thead>
         <tr>
             <td class="text-center">ID</td>
             <td class="text-center">Is ISO 4217 Code Valid?</td>
+            <td class="text-center">Names</td>
         </tr>
     </thead>
     <tbody>
@@ -16,6 +22,14 @@
         <tr>
             <td class="text-center">@currentUnit.Id</td>
             <td class="text-center">@currentUnit.IsIso4217CodeValid</td>
+            <td>
+                <ul>
+                    @foreach (var currentName in currentUnit.MeasureQualifiedNames)
+                    {
+                    <li>@currentName.LocalName</li>
+                    }
+                </ul>
+            </td>
         </tr>
 
     }
