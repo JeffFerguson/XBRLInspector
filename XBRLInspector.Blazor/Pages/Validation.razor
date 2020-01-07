@@ -5,12 +5,13 @@
 
 @if (XbrlDocumentCacheModel.Instance.IsValid)
 {
-        <p>The document at @XbrlDocumentCacheModel.Instance.Path is valid according to the XBRL 2.1 specification.</p>
+        <p>The document at @XbrlDocumentCacheModel.Instance.Filename is valid according to the XBRL 2.1 specification.</p>
 }
 
 @if (!XbrlDocumentCacheModel.Instance.IsValid)
 {
-        <p>The document at @XbrlDocumentCacheModel.Instance.Path is not valid according to the XBRL 2.1 specification. Number of validation errors: <b>@XbrlDocumentCacheModel.Instance.ValidationErrors.Count</b></p>
+        <p>The document at @XbrlDocumentCacheModel.Instance.Filename is not valid according to the XBRL 2.1 specification.</p>
+        <p>Number of validation errors: <b>@XbrlDocumentCacheModel.Instance.ValidationErrors.Count</b></p>
         <ul>
             @foreach (var validationError in XbrlDocumentCacheModel.Instance.ValidationErrors)
             {
