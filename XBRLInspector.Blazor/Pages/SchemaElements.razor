@@ -1,0 +1,60 @@
+﻿@page "/SchemaElements"
+@using XBRLInspector.Blazor.Models
+@using JeffFerguson.Gepsio.Xsd
+
+<h3>Schema Elements</h3>
+
+@foreach (var currentElement in mdl.Elements)
+{
+    <h4>@currentElement.Name</h4>
+    <table border="1">
+        <tr>
+            <td>ID</td>
+            <td>@currentElement.Id</td>
+        </tr>
+        <tr>
+            <td>Is Abstract?</td>
+            <td>@currentElement.IsAbstract</td>
+        </tr>
+        <tr>
+            <td>Period Type</td>
+            @if (currentElement.PeriodType == Element.ElementPeriodType.Duration)
+            {
+                <td>duration</td>
+            }
+            @if (currentElement.PeriodType == Element.ElementPeriodType.Instant)
+            {
+                <td>instant</td>
+            }
+            @if (currentElement.PeriodType == Element.ElementPeriodType.Unknown)
+            {
+                <td>unknown</td>
+            }
+        </tr>
+    </table>
+}
+
+@functions {
+    private readonly Model mdl = new Model();
+
+    public class Model
+    {
+        public int Count { get; private set; }
+        public List<Element> Elements { get; private set; }
+
+        public Model()
+        {
+            var doc = XbrlDocumentCacheModel.Instance;
+            Elements = new List<Element>();
+            var firstFragment = doc.XbrlFragments[0];
+            foreach (var currentSchema in firstFragment.Schemas)
+            {
+                foreach (var currentElement in currentSchema.Elements)
+                {
+                    Elements.Add(currentElement);
+                }
+            }
+            Elements = Elements.OrderBy(o => o.Name).ToList();
+        }
+    }
+}
