@@ -1,0 +1,20 @@
+﻿@page "/Validation"
+@using XBRLInspector.Blazor.Models
+
+<h3>Validation</h3>
+
+@if (XbrlDocumentCacheModel.Instance.IsValid)
+{
+        <p>The document at @XbrlDocumentCacheModel.Instance.Path is valid according to the XBRL 2.1 specification.</p>
+}
+
+@if (!XbrlDocumentCacheModel.Instance.IsValid)
+{
+        <p>The document at @XbrlDocumentCacheModel.Instance.Path is not valid according to the XBRL 2.1 specification. Number of validation errors: <b>@XbrlDocumentCacheModel.Instance.ValidationErrors.Count</b></p>
+        <ul>
+            @foreach (var validationError in XbrlDocumentCacheModel.Instance.ValidationErrors)
+            {
+                <li>@validationError.Message</li>
+            }
+        </ul>
+}
