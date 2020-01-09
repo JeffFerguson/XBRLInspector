@@ -47,6 +47,12 @@
             var doc = XbrlDocumentCacheModel.Instance;
             Elements = new List<Element>();
             var firstFragment = doc.XbrlFragments[0];
+            Count = 0;
+            foreach (var currentSchema in firstFragment.Schemas)
+            {
+                Count += currentSchema.Elements.Count;
+            }
+            Elements.Capacity = Count;
             foreach (var currentSchema in firstFragment.Schemas)
             {
                 foreach (var currentElement in currentSchema.Elements)

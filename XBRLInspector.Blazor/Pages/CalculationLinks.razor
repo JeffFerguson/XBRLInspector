@@ -1,0 +1,229 @@
+﻿@page "/CalculationLinks"
+@using XBRLInspector.Blazor.Models
+@using JeffFerguson.Gepsio.Xsd
+
+<h3>Calculation Links</h3>
+
+@foreach (var currentLink in mdl.Links)
+{
+    <h4>Link</h4>
+    <table border="1">
+        <tr>
+            <td>Title</td>
+            <td>@currentLink.Title</td>
+        </tr>
+        <tr>
+            <td>From</td>
+            <td>@currentLink.From</td>
+        </tr>
+        <tr>
+            <td>To</td>
+            <td>@currentLink.To</td>
+        </tr>
+    </table>
+    <h4>Arcs</h4>
+    <ul>
+        @foreach (var currentArc in currentLink.CalculationArcs)
+        {
+            <li>From <b>@currentArc.FromLocator.HrefResourceId</b> in resource <b>@currentArc.FromLocator.HrefDocumentUri</b> to ...
+                <ul>
+                    @foreach(var currentToLocator in currentArc.ToLocators)
+                    {
+                    <li>
+                        ...<b>@currentToLocator.HrefResourceId</b> in resource <b>@currentToLocator.HrefDocumentUri</b>
+                    </li>
+                    }
+                    <li>use of this arc is 
+                        @if (currentArc.Use == CalculationArc.ArcUse.Optional)
+                        {
+                                                                   <b>optional</b>
+                       }
+                        @if (currentArc.Use == CalculationArc.ArcUse.Prohibited)
+                        {
+                                        <b>prohibited</b>
+                       }
+                        @if (currentArc.Use == CalculationArc.ArcUse.Unspecified)
+                        {
+                            <b>unspecified</b>
+                        }
+                    </li>
+                </ul>
+            </li>
+        }
+    </ul>
+    @foreach (var currentSummationConcept in currentLink.SummationConcepts)
+    {
+        Element matchingElement;
+        Item matchingItem;
+        CalculationArc matchingArc;
+
+        <h5>Contributing Concepts</h5>
+        @foreach (var currentConcept in currentSummationConcept.ContributingConceptLocators)
+        {
+            matchingElement = mdl.LocateElement(currentConcept);
+            matchingItem = mdl.LocateItem(matchingElement);
+            matchingArc = mdl.GetCalculationArc(currentLink, currentConcept);
+            <table border="1">
+                <tr>
+                    <td>URI</td>
+                    <td>@currentConcept.HrefDocumentUri</td>
+                </tr>
+                <tr>
+                    <td>Resource ID</td>
+                    <td>@currentConcept.HrefResourceId</td>
+                </tr>
+                <tr>
+                    <td>Fact Value</td>
+                    <td>
+                        @matchingItem.Value
+                    </td>
+                </tr>
+                <tr>
+                    <td>Fact Rounded Value</td>
+                    <td>
+                        @matchingItem.RoundedValue
+                    </td>
+                </tr>
+                <tr>
+                    <td>Calculation Arc Use</td>
+                    @if (matchingArc.Use == CalculationArc.ArcUse.Optional)
+                    {
+                        <td>Optional</td>
+                    }
+                    @if (matchingArc.Use == CalculationArc.ArcUse.Prohibited)
+                    {
+                        <td>Prohibited</td>
+                    }
+                    @if (matchingArc.Use == CalculationArc.ArcUse.Prohibited)
+                    {
+                        <td>Unspecified</td>
+                    }
+                </tr>
+            </table>
+        }
+        <h5>Summation Concept</h5>
+        matchingElement = mdl.LocateElement(currentSummationConcept.SummationConceptLocator);
+        matchingItem = mdl.LocateItem(matchingElement);
+        matchingArc = mdl.GetCalculationArc(currentLink, currentSummationConcept.SummationConceptLocator);
+<table border="1">
+    <tr>
+        <td>Resource ID</td>
+        <td>@currentSummationConcept.SummationConceptLocator.HrefResourceId</td>
+    </tr>
+
+    <tr>
+        <td>Locator HREF</td>
+        <td>@currentSummationConcept.SummationConceptLocator.HrefDocumentUri</td>
+    </tr>
+    <tr>
+        <td>Fact Value</td>
+        <td>
+            @matchingItem.Value
+        </td>
+    </tr>
+    <tr>
+        <td>Fact Rounded Value</td>
+        <td>
+            @matchingItem.RoundedValue
+        </td>
+    </tr>
+    @if (matchingArc != null)
+    {
+    <tr>
+        <td>Calculation Arc Use</td>
+        @if (matchingArc.Use == CalculationArc.ArcUse.Optional)
+        {
+            <td>Optional</td>
+        }
+        @if (matchingArc.Use == CalculationArc.ArcUse.Prohibited)
+        {
+            <td>Prohibited</td>
+        }
+        @if (matchingArc.Use == CalculationArc.ArcUse.Prohibited)
+        {
+            <td>Unspecified</td>
+        }
+    </tr>
+    }
+</table>
+        }
+    }
+
+    @functions {
+        private readonly Model mdl = new Model();
+
+        public class Model
+        {
+            public int Count { get; private set; }
+            public List<CalculationLink> Links { get; private set; }
+            private XbrlFragment firstFragment { get; set; }
+
+            public Model()
+            {
+                var doc = XbrlDocumentCacheModel.Instance;
+                Links = new List<CalculationLink>();
+                firstFragment = doc.XbrlFragments[0];
+                foreach (var currentSchema in firstFragment.Schemas)
+                {
+                    var currentCalcLinkbase = currentSchema.CalculationLinkbase;
+                    if (currentCalcLinkbase != null)
+                    {
+                        foreach (var currentLink in currentCalcLinkbase.CalculationLinks)
+                        {
+                            Links.Add(currentLink);
+                        }
+                    }
+                }
+            }
+
+            // TODO: This should be a helper method in Gepsio itself.
+
+            internal Element LocateElement(Locator ElementLocator)
+            {
+                foreach (var currentSchema in firstFragment.Schemas)
+                {
+                    foreach (Element currentElement in currentSchema.Elements)
+                    {
+                        if (string.IsNullOrEmpty(currentElement.Id) == false)
+                        {
+                            if (currentElement.Id.Equals(ElementLocator.HrefResourceId) == true)
+                                return currentElement;
+                        }
+                    }
+                }
+                return null;
+            }
+
+            // TODO: This should be a helper method in Gepsio itself.
+
+            internal Item LocateItem(Element ItemElement)
+            {
+                FactCollection FactList = firstFragment.Facts;
+
+                if (ItemElement == null)
+                    return null;
+                foreach (Fact CurrentFact in FactList)
+                {
+                    var CurrentItem = CurrentFact as Item;
+                    if (CurrentItem != null)
+                    {
+                        if (CurrentItem.SchemaElement.Equals(ItemElement) == true)
+                            return CurrentItem;
+                    }
+                }
+                return null;
+            }
+
+            // TODO: This should be a helper method in Gepsio itself.
+
+            internal CalculationArc GetCalculationArc(CalculationLink link, Locator SourceLocator)
+            {
+                foreach (CalculationArc CurrentCalculationArc in link.CalculationArcs)
+                {
+                    if (CurrentCalculationArc.ToId.Equals(SourceLocator.Label) == true)
+                        return CurrentCalculationArc;
+                }
+                return null;
+            }
+        }
+}
