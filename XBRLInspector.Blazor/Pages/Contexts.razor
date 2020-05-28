@@ -3,34 +3,31 @@
 
 <h3>Contexts</h3>
 
-@foreach (var currentContext in mdl.Contexts)
-{
-        <h4>@currentContext.Id</h4>
-        <table border="1">
-            <tr>
-                <td>Identifier</td>
-                <td>@currentContext.Identifier</td>
-            </tr>
-            <tr>
-                <td>Identifier Scheme</td>
-                <td>@currentContext.IdentifierScheme</td>
-            </tr>
-            @if (currentContext.DurationPeriod)
-            {
-                <tr>
-                    <td>Duration</td>
-                    <td>from @currentContext.PeriodStartDate.Date to @currentContext.PeriodEndDate.Date</td>
-                </tr>
+<!--
+documentation for DxDataGrid at
+    https://docs.devexpress.com/Blazor/DevExpress.Blazor.DxDataGrid-1
+-->
+
+<DxDataGrid Data="@mdl.Contexts" ShowGroupPanel="true" ShowFilterRow="false">
+    <DxDataGridColumn Field="@nameof(Context.Id)" Caption="ID" SortIndex="0" SortOrder="@DataGridColumnSortOrder.Ascending" />
+    <DxDataGridColumn Field="@nameof(Context.Identifier)" Caption="Identifier" />
+    <DxDataGridColumn Field="@nameof(Context.IdentifierScheme)" Caption="Identifier Scheme" />
+    <DxDataGridColumn Caption="Duration">
+        <DisplayTemplate>
+            @{
+                var xbrlContext = (context as JeffFerguson.Gepsio.Context);
+                if (xbrlContext.DurationPeriod)
+                {
+                    <span>from @xbrlContext.PeriodStartDate.Date to @xbrlContext.PeriodEndDate.Date</span>
+                }
+                else
+                {
+                    <span>@xbrlContext.InstantDate</span>
+                }
             }
-            @if (currentContext.InstantPeriod)
-            {
-                <tr>
-                    <td>Instant Date</td>
-                    <td>@currentContext.InstantDate</td>
-                </tr>
-            }
-        </table>
-}
+        </DisplayTemplate>
+    </DxDataGridColumn>
+</DxDataGrid>
 
 @functions {
     private readonly Model mdl = new Model();
@@ -43,7 +40,8 @@
         public Model()
         {
             var doc = XbrlDocumentCacheModel.Instance;
-            Contexts = doc.XbrlFragments[0].Contexts.OrderBy(o => o.Id).ToList();
+            //Contexts = doc.XbrlFragments[0].Contexts.OrderBy(o => o.Id).ToList();
+            Contexts = doc.XbrlFragments[0].Contexts.ToList();
         }
     }
 }
